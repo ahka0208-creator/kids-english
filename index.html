@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>小一英文溫習與闖關 App (面試生字版)</title>
+  <title>小一英文溫習與測驗 App (面試生字版)</title>
   <style>
     :root {
       --bg-color: #f0f8ff;
@@ -64,10 +64,10 @@
 
     /* 綜合大測驗專屬按鈕樣式 */
     .mix-btn {
-      grid-column: 1 / -1; /* 橫跨整行 */
+      grid-column: 1 / -1; 
       background: linear-gradient(135deg, #FFD700, #FFA500) !important;
       color: white !important;
-      flex-direction: row; /* 橫向排列 */
+      flex-direction: row; 
       justify-content: center;
       padding: 25px;
       box-shadow: 0 8px 15px rgba(255, 165, 0, 0.3);
@@ -80,22 +80,10 @@
     .cat-btn:not(.mix-btn):nth-child(4n+4) { background-color: var(--secondary); }
     .cat-btn:not(.mix-btn):nth-child(4n+1) { background-color: var(--accent3); color: white;}
 
-    /* 模式選擇畫面 */
-    #mode-screen { display: none; text-align: center; height: 100%; padding-top: 30px; }
-    #mode-screen h2 { font-size: 40px; color: var(--text-dark); margin-bottom: 40px; }
-    .mode-options { display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; }
-    .mode-btn {
-      border: none; border-radius: 30px; padding: 40px 30px; font-size: 36px; font-weight: bold;
-      cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.15); transition: transform 0.1s;
-      display: flex; flex-direction: column; align-items: center; gap: 15px; width: 260px;
-    }
-    .mode-btn:active { transform: scale(0.95); }
-    .btn-study { background-color: var(--accent1); color: #333; }
-    .btn-game { background-color: var(--primary); color: white; }
-
     /* 共用頭部 */
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .back-btn { background: #eee; border: none; padding: 12px 25px; border-radius: 20px; font-size: 20px; font-weight: bold; cursor: pointer; }
+    .back-btn { background: #eee; border: none; padding: 12px 25px; border-radius: 20px; font-size: 20px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+    .back-btn:active { background: #ddd; }
     .header-title { font-size: 24px; font-weight: bold; color: var(--accent3); }
 
     /* 溫習畫面 (閃卡) */
@@ -151,33 +139,15 @@
   <!-- 1. 首頁：選擇分類 -->
   <div id="home-screen">
     <h1>🌟 小一面試單字大冒險 🌟</h1>
-    <p>請選擇一個主題開始！</p>
+    <p>點擊主題開始溫習，或直接挑戰大測驗！</p>
     <div class="category-grid" id="cat-grid"></div>
   </div>
 
-  <!-- 2. 模式選擇畫面 -->
-  <div id="mode-screen">
-    <div class="header">
-      <button class="back-btn" onclick="goHome()">🏠 返回</button>
-      <div class="header-title" id="mode-title">主題</div>
-      <div style="width:100px;"></div>
-    </div>
-    <h2>你想做什麼？</h2>
-    <div class="mode-options">
-      <button class="mode-btn btn-study" onclick="startStudy()">
-        <span style="font-size: 70px;">📖</span>溫習模式
-      </button>
-      <button class="mode-btn btn-game" onclick="startQuiz()">
-        <span style="font-size: 70px;">🎮</span>闖關模式
-      </button>
-    </div>
-  </div>
-
-  <!-- 3. 溫習畫面 (閃卡) -->
+  <!-- 2. 溫習畫面 (閃卡) -->
   <div id="study-screen">
     <div class="header">
-      <button class="back-btn" onclick="goModeSelect()">⬅️ 選模式</button>
-      <div class="header-title">📖 溫習中</div>
+      <button class="back-btn" onclick="goHome()">🏠 返回</button>
+      <div class="header-title" id="study-title">📖 溫習中</div>
       <div style="width:100px;"></div>
     </div>
     
@@ -195,10 +165,10 @@
     </div>
   </div>
 
-  <!-- 4. 遊戲畫面 -->
+  <!-- 3. 遊戲畫面 (綜合測驗) -->
   <div id="game-screen">
     <div class="header">
-      <button class="back-btn" onclick="goBackFromGame()">⬅️ 返回</button>
+      <button class="back-btn" onclick="goHome()">🏠 返回</button>
       <div class="score-board">⭐ 得分: <span id="score">0</span></div>
     </div>
     
@@ -302,7 +272,6 @@
 
   function hideAllScreens() {
     document.getElementById("home-screen").style.display = "none";
-    document.getElementById("mode-screen").style.display = "none";
     document.getElementById("study-screen").style.display = "none";
     document.getElementById("game-screen").style.display = "none";
     window.speechSynthesis.cancel();
@@ -312,19 +281,19 @@
     const grid = document.getElementById("cat-grid");
     grid.innerHTML = "";
     
-    // 1. 新增：綜合大測驗按鈕 (置頂)
+    // 1. 綜合大測驗按鈕 (置頂)
     const mixBtn = document.createElement("button");
     mixBtn.className = "cat-btn mix-btn";
     mixBtn.innerHTML = `<span>🏆</span> 綜合大測驗 (全部主題)`;
     mixBtn.onclick = () => startMixQuiz();
     grid.appendChild(mixBtn);
 
-    // 2. 原本的單一主題按鈕
+    // 2. 單一主題按鈕 (點擊直接進入溫習)
     for (let key in db) {
       const btn = document.createElement("button");
       btn.className = "cat-btn";
       btn.innerHTML = `<span>${db[key].emoji}</span>${db[key].name}`;
-      btn.onclick = () => showModeSelect(key);
+      btn.onclick = () => startStudy(key); // 直接調用溫習模式
       grid.appendChild(btn);
     }
   }
@@ -334,31 +303,19 @@
     document.getElementById("home-screen").style.display = "block";
   }
 
-  // 決定從遊戲畫面返回邊度
-  function goBackFromGame() {
-    if (currentCategory === "all") {
-      goHome(); // 綜合測驗無溫習模式，直接返主頁
-    } else {
-      goModeSelect(); // 單一主題返去選模式
-    }
-  }
-
-  function showModeSelect(category) {
+  // ================= 溫習模式邏輯 =================
+  function startStudy(category) {
     if(category) currentCategory = category;
     hideAllScreens();
-    document.getElementById("mode-title").innerText = `${db[currentCategory].emoji} ${db[currentCategory].name}`;
-    document.getElementById("mode-screen").style.display = "block";
-  }
-
-  function goModeSelect() {
-    showModeSelect(null);
-  }
-
-  // ================= 溫習模式邏輯 =================
-  function startStudy() {
-    hideAllScreens();
     studyIndex = 0;
+    
+    // 設置頂部標題
+    document.getElementById("study-title").innerText = `📖 溫習：${db[currentCategory].name}`;
     document.getElementById("study-screen").style.display = "block";
+    
+    // 將溫習卡片洗牌 (如不想洗牌可移除以下兩行)
+    db[currentCategory].words.sort(() => Math.random() - 0.5);
+    
     renderFlashcard();
   }
 
@@ -392,7 +349,7 @@
     }
   }
 
-  // ================= 綜合測驗邏輯 (新增) =================
+  // ================= 綜合測驗邏輯 =================
   function startMixQuiz() {
     hideAllScreens();
     currentCategory = "all";
@@ -409,22 +366,8 @@
     // 洗牌
     allWords.sort(() => Math.random() - 0.5);
     
-    // 抽取 20 題作為綜合測驗 (如想測驗所有生字，可移除 .slice(0, 20))
+    // 抽取 20 題作為綜合測驗
     remainingQuizWords = allWords.slice(0, 20);
-
-    nextQuestion();
-  }
-
-  // ================= 闖關模式邏輯 =================
-  function startQuiz() {
-    hideAllScreens();
-    score = 0;
-    document.getElementById("score").innerText = score;
-    document.getElementById("game-screen").style.display = "block";
-    
-    // 單一主題：將該主題所有生字洗牌
-    remainingQuizWords = [...db[currentCategory].words];
-    remainingQuizWords.sort(() => Math.random() - 0.5);
 
     nextQuestion();
   }
@@ -434,9 +377,8 @@
     
     if (remainingQuizWords.length === 0) {
       setTimeout(() => {
-        const catName = currentCategory === "all" ? "綜合大測驗" : db[currentCategory].name;
-        alert(`🎉 恭喜你完成「${catName}」！\n⭐ 你的總得分是：${score} 分！`);
-        goBackFromGame();
+        alert(`🎉 恭喜你完成「綜合大測驗」！\n⭐ 你的總得分是：${score} 分！`);
+        goHome();
       }, 500);
       return;
     }
@@ -449,13 +391,9 @@
     const colors = ["#FF9AA2", "#B5EAD7", "#C7CEEA", "#FFDAC1"];
     document.getElementById("en-word").style.color = colors[Math.floor(Math.random()*colors.length)];
     
-    // 獲取用來做選項的總字庫 (如果是綜合測驗，選項會由全部字庫中抽取)
+    // 獲取用來做選項的總字庫
     let optionsSource = [];
-    if (currentCategory === "all") {
-      for (let key in db) { optionsSource = optionsSource.concat(db[key].words); }
-    } else {
-      optionsSource = db[currentCategory].words;
-    }
+    for (let key in db) { optionsSource = optionsSource.concat(db[key].words); }
 
     let options = [currentWordObj];
     let attempts = 0;
