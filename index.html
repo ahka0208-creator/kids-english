@@ -22,7 +22,7 @@
     body {
       background-color: var(--bg-color);
       margin: 0;
-      padding: 30px;
+      padding: 15px; /* 縮小邊距適應橫向 */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -36,41 +36,32 @@
       background: white;
       border-radius: 30px;
       box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-      padding: 40px;
+      padding: 25px; /* 縮小內部留白 */
       position: relative;
-      overflow: hidden;
-      min-height: 85vh;
+      /* 加入捲動設定，防止橫向螢幕被切斷 */
+      max-height: 96vh;
+      overflow-y: auto;
     }
 
     /* 首頁選單 */
     #home-screen { display: block; text-align: center; }
-    #home-screen h1 { font-size: 42px; color: #ff6b6b; margin-bottom: 10px; }
-    #home-screen p { font-size: 24px; color: #888; margin-bottom: 40px; }
+    #home-screen h1 { font-size: 38px; color: #ff6b6b; margin-bottom: 10px; }
+    #home-screen p { font-size: 22px; color: #888; margin-bottom: 30px; }
 
     .category-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
     }
 
     .cat-btn {
-      background-color: var(--secondary);
-      border: none;
-      border-radius: 25px;
-      padding: 25px 20px;
-      font-size: 26px;
-      font-weight: bold;
-      color: var(--text-dark);
-      cursor: pointer;
-      box-shadow: 0 8px 0px rgba(0,0,0,0.1);
-      transition: transform 0.1s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
+      background-color: var(--secondary); border: none; border-radius: 25px;
+      padding: 20px 15px; font-size: 24px; font-weight: bold; color: var(--text-dark);
+      cursor: pointer; box-shadow: 0 6px 0px rgba(0,0,0,0.1); transition: transform 0.1s;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
     }
-    .cat-btn:active { transform: translateY(8px); box-shadow: none; }
-    .cat-btn span { font-size: 50px; }
+    .cat-btn:active { transform: translateY(6px); box-shadow: none; }
+    .cat-btn span { font-size: 45px; }
 
     /* 各類別顏色隨機設定 */
     .cat-btn:nth-child(4n+1) { background-color: var(--primary); color: white;}
@@ -79,39 +70,40 @@
     .cat-btn:nth-child(4n+4) { background-color: var(--accent3); color: white;}
 
     /* 模式選擇畫面 */
-    #mode-screen { display: none; text-align: center; height: 100%; padding-top: 50px; }
-    #mode-screen h2 { font-size: 46px; color: var(--text-dark); margin-bottom: 60px; }
-    .mode-options { display: flex; justify-content: center; gap: 40px; }
+    #mode-screen { display: none; text-align: center; height: 100%; padding-top: 30px; }
+    #mode-screen h2 { font-size: 40px; color: var(--text-dark); margin-bottom: 40px; }
+    .mode-options { display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; }
     .mode-btn {
-      border: none; border-radius: 30px; padding: 50px 40px; font-size: 40px; font-weight: bold;
-      cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.15); transition: transform 0.1s;
-      display: flex; flex-direction: column; align-items: center; gap: 20px; width: 300px;
+      border: none; border-radius: 30px; padding: 40px 30px; font-size: 36px; font-weight: bold;
+      cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.15); transition: transform 0.1s;
+      display: flex; flex-direction: column; align-items: center; gap: 15px; width: 260px;
     }
     .mode-btn:active { transform: scale(0.95); }
     .btn-study { background-color: var(--accent1); color: #333; }
     .btn-game { background-color: var(--primary); color: white; }
 
     /* 共用頭部 */
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-    .back-btn { background: #eee; border: none; padding: 15px 30px; border-radius: 20px; font-size: 22px; font-weight: bold; cursor: pointer; }
-    .header-title { font-size: 28px; font-weight: bold; color: var(--accent3); }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .back-btn { background: #eee; border: none; padding: 12px 25px; border-radius: 20px; font-size: 20px; font-weight: bold; cursor: pointer; }
+    .header-title { font-size: 24px; font-weight: bold; color: var(--accent3); }
 
-    /* 溫習畫面 (閃卡) */
+    /* 溫習畫面 (閃卡) - 針對橫向縮小留白 */
     #study-screen { display: none; text-align: center; height: 100%; }
     .flashcard {
-      background: white; border: 8px solid var(--accent3); border-radius: 40px;
-      padding: 60px 40px; margin: 0 auto; max-width: 600px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.08); position: relative;
+      background: white; border: 8px solid var(--accent3); border-radius: 30px;
+      padding: 30px 20px; /* 大幅縮小上下留白，防止被切斷 */
+      margin: 0 auto; max-width: 500px; position: relative;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
-    .fc-progress { position: absolute; top: 20px; right: 30px; font-size: 20px; color: #aaa; font-weight: bold; }
-    .fc-emoji { font-size: 120px; margin-bottom: 20px; line-height: 1; }
-    .fc-en { font-size: 72px; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; letter-spacing: 2px; }
-    .fc-zh { font-size: 40px; color: #888; margin-bottom: 40px; }
+    .fc-progress { position: absolute; top: 15px; right: 25px; font-size: 18px; color: #aaa; font-weight: bold; }
+    .fc-emoji { font-size: 90px; margin-bottom: 10px; line-height: 1; }
+    .fc-en { font-size: 56px; font-weight: 800; color: var(--text-dark); margin-bottom: 5px; letter-spacing: 2px; }
+    .fc-zh { font-size: 32px; color: #888; margin-bottom: 20px; }
     
-    .nav-btns { display: flex; justify-content: center; align-items: center; gap: 40px; margin-top: 40px; }
+    .nav-btns { display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 25px; }
     .nav-btn { 
-      font-size: 40px; background: var(--secondary); border: none; border-radius: 50%; 
-      width: 90px; height: 90px; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      font-size: 36px; background: var(--secondary); border: none; border-radius: 50%; 
+      width: 75px; height: 75px; cursor: pointer; box-shadow: 0 5px 12px rgba(0,0,0,0.1);
       display: flex; justify-content: center; align-items: center;
     }
     .nav-btn:active { transform: scale(0.9); }
@@ -119,21 +111,26 @@
 
     /* 遊戲畫面 */
     #game-screen { display: none; text-align: center; height: 100%; }
-    .score-board { font-size: 28px; font-weight: bold; color: #ff9800; background: #fff3e0; padding: 12px 25px; border-radius: 25px; }
-    .question-box { margin: 10px 0 40px 0; }
-    .english-word { font-size: 72px; font-weight: 800; color: var(--accent3); margin-bottom: 20px; letter-spacing: 2px; }
+    .score-board { font-size: 24px; font-weight: bold; color: #ff9800; background: #fff3e0; padding: 10px 20px; border-radius: 20px; }
+    .question-box { margin: 10px 0 30px 0; }
+    .english-word { font-size: 64px; font-weight: 800; color: var(--accent3); margin-bottom: 15px; letter-spacing: 2px; }
     .audio-btn {
-      background: var(--accent1); border: none; border-radius: 50%; width: 90px; height: 90px;
-      font-size: 40px; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      background: var(--accent1); border: none; border-radius: 50%; width: 80px; height: 80px;
+      font-size: 36px; cursor: pointer; box-shadow: 0 5px 12px rgba(0,0,0,0.1);
     }
     .audio-btn:active { transform: scale(0.9); }
-    .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
+    
+    .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
     .opt-btn {
-      background: white; border: 5px solid var(--accent2); border-radius: 30px; padding: 35px 20px;
-      font-size: 32px; font-weight: bold; color: var(--text-dark); cursor: pointer;
-      display: flex; justify-content: center; align-items: center; gap: 20px; transition: all 0.2s;
+      background: white; border: 5px solid var(--accent2); border-radius: 25px; padding: 25px 15px;
+      font-size: 30px; font-weight: bold; color: var(--text-dark); cursor: pointer;
+      display: flex; justify-content: center; align-items: center; gap: 15px; transition: all 0.2s;
     }
     .opt-btn:active { transform: scale(0.95); }
+    
+    /* 這裡獨立放大闖關選項的 Emoji */
+    .opt-btn span { font-size: 55px; } 
+
     .correct { background: var(--correct); border-color: var(--correct); color: white; }
     .wrong { background: var(--wrong); border-color: var(--wrong); color: white; }
 
@@ -155,15 +152,15 @@
     <div class="header">
       <button class="back-btn" onclick="goHome()">🏠 返回</button>
       <div class="header-title" id="mode-title">主題</div>
-      <div style="width:100px;"></div> <!-- 佔位符保持置中 -->
+      <div style="width:100px;"></div>
     </div>
     <h2>你想做什麼？</h2>
     <div class="mode-options">
       <button class="mode-btn btn-study" onclick="startStudy()">
-        <span style="font-size: 80px;">📖</span>溫習模式
+        <span style="font-size: 70px;">📖</span>溫習模式
       </button>
       <button class="mode-btn btn-game" onclick="startQuiz()">
-        <span style="font-size: 80px;">🎮</span>闖關模式
+        <span style="font-size: 70px;">🎮</span>闖關模式
       </button>
     </div>
   </div>
@@ -208,7 +205,7 @@
 </div>
 
 <script>
-  // 資料庫完全根據小一面試英文生字表 PDF 製作
+  // 資料庫
   const db = {
     bodyParts: { name: "身體部位", emoji: "👋", words: [
       {en: "arm", zh: "手臂", em: "💪"}, {en: "hand", zh: "手", em: "🖐️"}, {en: "foot", zh: "腳/手腳", em: "🦶"}, 
@@ -293,8 +290,10 @@
   let score = 0;
   let isAnswering = false;
   let studyIndex = 0;
+  
+  // 新增：儲存闖關模式尚未回答的問題，防止重複
+  let remainingQuizWords = []; 
 
-  // 隱藏所有畫面
   function hideAllScreens() {
     document.getElementById("home-screen").style.display = "none";
     document.getElementById("mode-screen").style.display = "none";
@@ -303,7 +302,6 @@
     window.speechSynthesis.cancel();
   }
 
-  // 首頁初始化
   function initMenu() {
     const grid = document.getElementById("cat-grid");
     grid.innerHTML = "";
@@ -316,13 +314,11 @@
     }
   }
 
-  // 返回主頁
   function goHome() {
     hideAllScreens();
     document.getElementById("home-screen").style.display = "block";
   }
 
-  // 進入模式選擇畫面
   function showModeSelect(category) {
     if(category) currentCategory = category;
     hideAllScreens();
@@ -330,7 +326,6 @@
     document.getElementById("mode-screen").style.display = "block";
   }
 
-  // 返回模式選擇
   function goModeSelect() {
     showModeSelect(null);
   }
@@ -353,11 +348,9 @@
     document.getElementById("fc-zh").innerText = currentWordObj.zh;
     document.getElementById("fc-progress").innerText = `${studyIndex + 1} / ${words.length}`;
 
-    // 更新按鈕狀態
     document.getElementById("btn-prev").disabled = (studyIndex === 0);
     document.getElementById("btn-next").disabled = (studyIndex === words.length - 1);
 
-    // 換卡時自動發聲
     setTimeout(playAudio, 300);
   }
 
@@ -375,34 +368,53 @@
     }
   }
 
-  // ================= 闖關模式邏輯 =================
+  // ================= 闖關模式邏輯 (不重複機制) =================
   function startQuiz() {
     hideAllScreens();
     score = 0;
     document.getElementById("score").innerText = score;
     document.getElementById("game-screen").style.display = "block";
     
-    const colors = ["#FF9AA2", "#B5EAD7", "#C7CEEA", "#FFDAC1"];
-    document.getElementById("en-word").style.color = colors[Math.floor(Math.random()*colors.length)];
-    
+    // 初始化題庫並打亂順序 (洗牌)
+    remainingQuizWords = [...db[currentCategory].words];
+    remainingQuizWords.sort(() => Math.random() - 0.5);
+
     nextQuestion();
   }
 
   function nextQuestion() {
     isAnswering = false;
-    const words = db[currentCategory].words;
-    currentWordObj = words[Math.floor(Math.random() * words.length)];
+    
+    // 檢查是否已經答完該類別所有題目
+    if (remainingQuizWords.length === 0) {
+      setTimeout(() => {
+        alert(`🎉 恭喜你完成「${db[currentCategory].name}」的挑戰！\n⭐ 你的總得分是：${score} 分！`);
+        goModeSelect();
+      }, 500);
+      return;
+    }
+
+    // 抽出一題並從未答陣列中移除 (確保不重複)
+    currentWordObj = remainingQuizWords.pop();
+    
     let displayWord = currentWordObj.en.charAt(0).toUpperCase() + currentWordObj.en.slice(1);
     document.getElementById("en-word").innerText = displayWord;
     
+    const colors = ["#FF9AA2", "#B5EAD7", "#C7CEEA", "#FFDAC1"];
+    document.getElementById("en-word").style.color = colors[Math.floor(Math.random()*colors.length)];
+    
+    // 產生選項 (1個正確答案 + 3個錯誤答案)
+    // 錯誤答案依然從該類別的所有單字中隨機抽取
+    const allWords = db[currentCategory].words;
     let options = [currentWordObj];
     let attempts = 0;
     while(options.length < 4 && attempts < 50) {
-      let randomOpt = words[Math.floor(Math.random() * words.length)];
+      let randomOpt = allWords[Math.floor(Math.random() * allWords.length)];
       if(!options.includes(randomOpt)) options.push(randomOpt);
       attempts++;
     }
 
+    // 打亂按鈕順序
     options.sort(() => Math.random() - 0.5);
 
     const optArea = document.getElementById("options-area");
@@ -469,9 +481,7 @@
     oscillator.stop(audioCtx.currentTime + duration);
   }
 
-  // 啟動程式
   initMenu();
-
 </script>
 </body>
 </html>
