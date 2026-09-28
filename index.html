@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>小一英文闖關小遊戲</title>
+  <title>小一英文溫習與闖關 App (面試生字版)</title>
   <style>
     :root {
       --bg-color: #f0f8ff;
@@ -22,7 +22,7 @@
     body {
       background-color: var(--bg-color);
       margin: 0;
-      padding: 20px;
+      padding: 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -32,11 +32,11 @@
 
     .app-container {
       width: 100%;
-      max-width: 800px;
+      max-width: 900px;
       background: white;
       border-radius: 30px;
       box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-      padding: 30px;
+      padding: 40px;
       position: relative;
       overflow: hidden;
       min-height: 85vh;
@@ -44,231 +44,247 @@
 
     /* 首頁選單 */
     #home-screen { display: block; text-align: center; }
-    #home-screen h1 { font-size: 36px; color: #ff6b6b; margin-bottom: 10px; }
-    #home-screen p { font-size: 20px; color: #888; margin-bottom: 30px; }
+    #home-screen h1 { font-size: 42px; color: #ff6b6b; margin-bottom: 10px; }
+    #home-screen p { font-size: 24px; color: #888; margin-bottom: 40px; }
 
     .category-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 20px;
-    }
-
-    @media (max-width: 600px) {
-      .category-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     .cat-btn {
       background-color: var(--secondary);
       border: none;
-      border-radius: 20px;
-      padding: 20px;
-      font-size: 24px;
+      border-radius: 25px;
+      padding: 25px 20px;
+      font-size: 26px;
       font-weight: bold;
       color: var(--text-dark);
       cursor: pointer;
-      box-shadow: 0 6px 0px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 0px rgba(0,0,0,0.1);
       transition: transform 0.1s;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 15px;
     }
+    .cat-btn:active { transform: translateY(8px); box-shadow: none; }
+    .cat-btn span { font-size: 50px; }
+
+    /* 各類別顏色隨機設定 */
+    .cat-btn:nth-child(4n+1) { background-color: var(--primary); color: white;}
+    .cat-btn:nth-child(4n+2) { background-color: var(--accent2); }
+    .cat-btn:nth-child(4n+3) { background-color: var(--secondary); }
+    .cat-btn:nth-child(4n+4) { background-color: var(--accent3); color: white;}
+
+    /* 模式選擇畫面 */
+    #mode-screen { display: none; text-align: center; height: 100%; padding-top: 50px; }
+    #mode-screen h2 { font-size: 46px; color: var(--text-dark); margin-bottom: 60px; }
+    .mode-options { display: flex; justify-content: center; gap: 40px; }
+    .mode-btn {
+      border: none; border-radius: 30px; padding: 50px 40px; font-size: 40px; font-weight: bold;
+      cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.15); transition: transform 0.1s;
+      display: flex; flex-direction: column; align-items: center; gap: 20px; width: 300px;
+    }
+    .mode-btn:active { transform: scale(0.95); }
+    .btn-study { background-color: var(--accent1); color: #333; }
+    .btn-game { background-color: var(--primary); color: white; }
+
+    /* 共用頭部 */
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .back-btn { background: #eee; border: none; padding: 15px 30px; border-radius: 20px; font-size: 22px; font-weight: bold; cursor: pointer; }
+    .header-title { font-size: 28px; font-weight: bold; color: var(--accent3); }
+
+    /* 溫習畫面 (閃卡) */
+    #study-screen { display: none; text-align: center; height: 100%; }
+    .flashcard {
+      background: white; border: 8px solid var(--accent3); border-radius: 40px;
+      padding: 60px 40px; margin: 0 auto; max-width: 600px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.08); position: relative;
+    }
+    .fc-progress { position: absolute; top: 20px; right: 30px; font-size: 20px; color: #aaa; font-weight: bold; }
+    .fc-emoji { font-size: 120px; margin-bottom: 20px; line-height: 1; }
+    .fc-en { font-size: 72px; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; letter-spacing: 2px; }
+    .fc-zh { font-size: 40px; color: #888; margin-bottom: 40px; }
     
-    .cat-btn:active { transform: translateY(6px); box-shadow: none; }
-    .cat-btn span { font-size: 40px; }
+    .nav-btns { display: flex; justify-content: center; align-items: center; gap: 40px; margin-top: 40px; }
+    .nav-btn { 
+      font-size: 40px; background: var(--secondary); border: none; border-radius: 50%; 
+      width: 90px; height: 90px; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      display: flex; justify-content: center; align-items: center;
+    }
+    .nav-btn:active { transform: scale(0.9); }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
 
     /* 遊戲畫面 */
     #game-screen { display: none; text-align: center; height: 100%; }
-    
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 30px;
-    }
-
-    .back-btn {
-      background: #eee;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 15px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .score-board {
-      font-size: 24px;
-      font-weight: bold;
-      color: #ff9800;
-      background: #fff3e0;
-      padding: 10px 20px;
-      border-radius: 20px;
-    }
-
-    .question-box {
-      margin: 20px 0 40px 0;
-    }
-
-    .english-word {
-      font-size: 64px;
-      font-weight: 800;
-      color: var(--accent3);
-      margin-bottom: 15px;
-      letter-spacing: 2px;
-    }
-
+    .score-board { font-size: 28px; font-weight: bold; color: #ff9800; background: #fff3e0; padding: 12px 25px; border-radius: 25px; }
+    .question-box { margin: 10px 0 40px 0; }
+    .english-word { font-size: 72px; font-weight: 800; color: var(--accent3); margin-bottom: 20px; letter-spacing: 2px; }
     .audio-btn {
-      background: var(--accent1);
-      border: none;
-      border-radius: 50%;
-      width: 70px;
-      height: 70px;
-      font-size: 32px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      background: var(--accent1); border: none; border-radius: 50%; width: 90px; height: 90px;
+      font-size: 40px; cursor: pointer; box-shadow: 0 6px 15px rgba(0,0,0,0.1);
     }
-
     .audio-btn:active { transform: scale(0.9); }
-
-    .options-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-
+    .options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
     .opt-btn {
-      background: white;
-      border: 4px solid var(--accent2);
-      border-radius: 25px;
-      padding: 30px;
-      font-size: 28px;
-      font-weight: bold;
-      color: var(--text-dark);
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 15px;
-      transition: all 0.2s;
+      background: white; border: 5px solid var(--accent2); border-radius: 30px; padding: 35px 20px;
+      font-size: 32px; font-weight: bold; color: var(--text-dark); cursor: pointer;
+      display: flex; justify-content: center; align-items: center; gap: 20px; transition: all 0.2s;
     }
-
     .opt-btn:active { transform: scale(0.95); }
-    
     .correct { background: var(--correct); border-color: var(--correct); color: white; }
     .wrong { background: var(--wrong); border-color: var(--wrong); color: white; }
 
-    /* 各類別顏色隨機設定 */
-    .cat-btn:nth-child(3n+1) { background-color: var(--primary); color: white;}
-    .cat-btn:nth-child(3n+2) { background-color: var(--accent2); }
-    .cat-btn:nth-child(3n+3) { background-color: var(--secondary); }
   </style>
 </head>
 <body>
 
 <div class="app-container">
   
-  <!-- 首頁 -->
+  <!-- 1. 首頁：選擇分類 -->
   <div id="home-screen">
-    <h1>🌟 小一英文單字大冒險 🌟</h1>
-    <p>請選擇一個主題開始闖關！</p>
-    <div class="category-grid" id="cat-grid">
-      <!-- 按鈕會由 JS 自動生成 -->
+    <h1>🌟 小一面試單字大冒險 🌟</h1>
+    <p>請選擇一個主題開始！</p>
+    <div class="category-grid" id="cat-grid"></div>
+  </div>
+
+  <!-- 2. 模式選擇畫面 -->
+  <div id="mode-screen">
+    <div class="header">
+      <button class="back-btn" onclick="goHome()">🏠 返回</button>
+      <div class="header-title" id="mode-title">主題</div>
+      <div style="width:100px;"></div> <!-- 佔位符保持置中 -->
+    </div>
+    <h2>你想做什麼？</h2>
+    <div class="mode-options">
+      <button class="mode-btn btn-study" onclick="startStudy()">
+        <span style="font-size: 80px;">📖</span>溫習模式
+      </button>
+      <button class="mode-btn btn-game" onclick="startQuiz()">
+        <span style="font-size: 80px;">🎮</span>闖關模式
+      </button>
     </div>
   </div>
 
-  <!-- 遊戲畫面 -->
+  <!-- 3. 溫習畫面 (閃卡) -->
+  <div id="study-screen">
+    <div class="header">
+      <button class="back-btn" onclick="goModeSelect()">⬅️ 選模式</button>
+      <div class="header-title">📖 溫習中</div>
+      <div style="width:100px;"></div>
+    </div>
+    
+    <div class="flashcard">
+      <div class="fc-progress" id="fc-progress">1 / 10</div>
+      <div class="fc-emoji" id="fc-emoji">🍎</div>
+      <div class="fc-en" id="fc-en">Apple</div>
+      <div class="fc-zh" id="fc-zh">蘋果</div>
+      <button class="audio-btn" onclick="playAudio()">🔊</button>
+    </div>
+
+    <div class="nav-btns">
+      <button class="nav-btn" id="btn-prev" onclick="prevCard()">◀️</button>
+      <button class="nav-btn" id="btn-next" onclick="nextCard()">▶️</button>
+    </div>
+  </div>
+
+  <!-- 4. 遊戲畫面 -->
   <div id="game-screen">
     <div class="header">
-      <button class="back-btn" onclick="goHome()">🏠 返回</button>
+      <button class="back-btn" onclick="goModeSelect()">⬅️ 選模式</button>
       <div class="score-board">⭐ 得分: <span id="score">0</span></div>
     </div>
     
     <div class="question-box">
-      <div class="english-word" id="en-word">Apple</div>
+      <div class="english-word" id="en-word">Word</div>
       <button class="audio-btn" onclick="playAudio()">🔊</button>
     </div>
 
-    <div class="options-grid" id="options-area">
-      <!-- 選項由 JS 生成 -->
-    </div>
+    <div class="options-grid" id="options-area"></div>
   </div>
 
 </div>
 
 <script>
-  // 11大分類英文詞彙庫 (專為小一設計，配有 Emoji)
+  // 資料庫完全根據小一面試英文生字表 PDF 製作
   const db = {
-    school: { name: "學校", emoji: "🏫", words: [
-      {en: "school", zh: "學校", em: "🏫"}, {en: "teacher", zh: "老師", em: "👩‍🏫"}, 
-      {en: "student", zh: "學生", em: "🧒"}, {en: "classroom", zh: "課室", em: "🚪"},
-      {en: "desk", zh: "書桌", em: "🪑"}, {en: "book", zh: "書本", em: "📖"},
-      {en: "bag", zh: "書包", em: "🎒"}
+    bodyParts: { name: "身體部位", emoji: "👋", words: [
+      {en: "arm", zh: "手臂", em: "💪"}, {en: "hand", zh: "手", em: "🖐️"}, {en: "foot", zh: "腳/手腳", em: "🦶"}, 
+      {en: "head", zh: "頭", em: "👤"}, {en: "hair", zh: "頭髮", em: "💇"}, {en: "face", zh: "臉", em: "🙂"},
+      {en: "eye", zh: "眼睛", em: "👁️"}, {en: "ear", zh: "耳朵", em: "👂"}, {en: "mouth", zh: "嘴巴", em: "👄"}, {en: "nose", zh: "鼻子", em: "👃"}
     ]},
-    month: { name: "月份", emoji: "📅", words: [
-      {en: "January", zh: "一月", em: "1️⃣"}, {en: "February", zh: "二月", em: "2️⃣"},
-      {en: "March", zh: "三月", em: "3️⃣"}, {en: "April", zh: "四月", em: "4️⃣"},
-      {en: "May", zh: "五月", em: "5️⃣"}, {en: "June", zh: "六月", em: "6️⃣"},
-      {en: "July", zh: "七月", em: "7️⃣"}, {en: "August", zh: "八月", em: "8️⃣"},
-      {en: "September", zh: "九月", em: "9️⃣"}, {en: "October", zh: "十月", em: "🔟"},
-      {en: "November", zh: "十一月", em: "1️⃣1️⃣"}, {en: "December", zh: "十二月", em: "1️⃣2️⃣"}
+    animals: { name: "動物", emoji: "🦁", words: [
+      {en: "chicken", zh: "雞", em: "🐔"}, {en: "bird", zh: "鳥", em: "🐦"}, {en: "horse", zh: "馬", em: "🐴"}, 
+      {en: "cow", zh: "牛", em: "🐮"}, {en: "frog", zh: "青蛙", em: "🐸"}, {en: "duck", zh: "鴨", em: "🦆"},
+      {en: "monkey", zh: "猴子", em: "🐵"}, {en: "goat", zh: "山羊", em: "🐐"}, {en: "tiger", zh: "老虎", em: "🐯"}, 
+      {en: "sheep", zh: "綿羊", em: "🐑"}, {en: "mouse", zh: "老鼠", em: "🐭"}, {en: "dog", zh: "狗", em: "🐶"},
+      {en: "snake", zh: "蛇", em: "🐍"}, {en: "elephant", zh: "大象", em: "🐘"}, {en: "giraffe", zh: "長頸鹿", em: "🦒"}, 
+      {en: "spider", zh: "蜘蛛", em: "🕷️"}, {en: "hippo", zh: "河馬", em: "🦛"}, {en: "lion", zh: "獅子", em: "🦁"},
+      {en: "zebra", zh: "斑馬", em: "🦓"}, {en: "lizard", zh: "蜥蜴", em: "🦎"}, {en: "cat", zh: "貓", em: "🐱"}
     ]},
-    number: { name: "數字 1-20", emoji: "🔢", words: [
-      {en: "one", zh: "一", em: "1"}, {en: "two", zh: "二", em: "2"}, {en: "three", zh: "三", em: "3"},
-      {en: "four", zh: "四", em: "4"}, {en: "five", zh: "五", em: "5"}, {en: "six", zh: "六", em: "6"},
-      {en: "seven", zh: "七", em: "7"}, {en: "eight", zh: "八", em: "8"}, {en: "nine", zh: "九", em: "9"},
-      {en: "ten", zh: "十", em: "10"}, {en: "eleven", zh: "十一", em: "11"}, {en: "twelve", zh: "十二", em: "12"},
-      {en: "thirteen", zh: "十三", em: "13"}, {en: "fourteen", zh: "十四", em: "14"}, {en: "fifteen", zh: "十五", em: "15"},
-      {en: "sixteen", zh: "十六", em: "16"}, {en: "seventeen", zh: "十七", em: "17"}, {en: "eighteen", zh: "十八", em: "18"},
-      {en: "nineteen", zh: "十九", em: "19"}, {en: "twenty", zh: "二十", em: "20"}
+    colours: { name: "顏色", emoji: "🎨", words: [
+      {en: "purple", zh: "紫色", em: "🟣"}, {en: "orange", zh: "橙色", em: "🟠"}, {en: "yellow", zh: "黃色", em: "🟡"}, 
+      {en: "green", zh: "綠色", em: "🟢"}, {en: "blue", zh: "藍色", em: "🔵"}, {en: "red", zh: "紅色", em: "🔴"},
+      {en: "black", zh: "黑色", em: "⚫"}, {en: "pink", zh: "粉紅色", em: "🌸"}, {en: "brown", zh: "啡/棕色", em: "🟤"}, {en: "white", zh: "白色", em: "⚪"}
     ]},
-    fruit: { name: "水果", emoji: "🍎", words: [
-      {en: "apple", zh: "蘋果", em: "🍎"}, {en: "banana", zh: "香蕉", em: "🍌"}, 
-      {en: "orange", zh: "橙", em: "🍊"}, {en: "grape", zh: "葡萄", em: "🍇"},
-      {en: "watermelon", zh: "西瓜", em: "🍉"}, {en: "strawberry", zh: "士多啤梨", em: "🍓"},
-      {en: "mango", zh: "芒果", em: "🥭"}, {en: "pear", zh: "梨", em: "🍐"}
+    fruits: { name: "水果", emoji: "🍎", words: [
+      {en: "apple", zh: "蘋果", em: "🍎"}, {en: "banana", zh: "香蕉", em: "🍌"}, {en: "orange", zh: "橘子/橙", em: "🍊"}, 
+      {en: "grapes", zh: "葡萄", em: "🍇"}, {en: "lemon", zh: "檸檬", em: "🍋"}, {en: "mango", zh: "芒果", em: "🥭"},
+      {en: "pear", zh: "梨子", em: "🍐"}, {en: "pineapple", zh: "鳳梨/菠蘿", em: "🍍"}, {en: "watermelon", zh: "西瓜", em: "🍉"}, {en: "avocado", zh: "牛油果", em: "🥑"}
     ]},
-    animal: { name: "動物", emoji: "🐶", words: [
-      {en: "dog", zh: "狗", em: "🐶"}, {en: "cat", zh: "貓", em: "🐱"}, 
-      {en: "bird", zh: "鳥", em: "🐦"}, {en: "fish", zh: "魚", em: "🐟"},
-      {en: "pig", zh: "豬", em: "🐷"}, {en: "elephant", zh: "大象", em: "🐘"},
-      {en: "lion", zh: "獅子", em: "🦁"}, {en: "monkey", zh: "猴子", em: "🐵"}
-    ]},
-    food: { name: "食物", emoji: "🍔", words: [
-      {en: "bread", zh: "麵包", em: "🍞"}, {en: "egg", zh: "雞蛋", em: "🥚"},
-      {en: "meat", zh: "肉", em: "🥩"}, {en: "rice", zh: "飯", em: "🍚"},
-      {en: "cake", zh: "蛋糕", em: "🍰"}, {en: "pizza", zh: "薄餅", em: "🍕"},
-      {en: "cheese", zh: "芝士", em: "🧀"}, {en: "soup", zh: "湯", em: "🥣"}
-    ]},
-    vegetable: { name: "蔬菜", emoji: "🥦", words: [
-      {en: "carrot", zh: "紅蘿蔔", em: "🥕"}, {en: "potato", zh: "馬鈴薯", em: "🥔"},
-      {en: "tomato", zh: "番茄", em: "🍅"}, {en: "onion", zh: "洋蔥", em: "🧅"},
-      {en: "corn", zh: "粟米", em: "🌽"}, {en: "mushroom", zh: "蘑菇", em: "🍄"}
-    ]},
-    color: { name: "顏色", emoji: "🎨", words: [
-      {en: "red", zh: "紅色", em: "🔴"}, {en: "blue", zh: "藍色", em: "🔵"},
-      {en: "green", zh: "綠色", em: "🟢"}, {en: "yellow", zh: "黃色", em: "🟡"},
-      {en: "orange", zh: "橙色", em: "🟠"}, {en: "purple", zh: "紫色", em: "🟣"},
-      {en: "black", zh: "黑色", em: "⚫"}, {en: "white", zh: "白色", em: "⚪"},
-      {en: "pink", zh: "粉紅色", em: "🌸"}, {en: "brown", zh: "啡色", em: "🟤"}
-    ]},
-    family: { name: "家庭", emoji: "👨‍👩‍👧", words: [
-      {en: "father", zh: "爸爸", em: "👨"}, {en: "mother", zh: "媽媽", em: "👩"},
-      {en: "brother", zh: "兄弟", em: "👦"}, {en: "sister", zh: "姊妹", em: "👧"},
-      {en: "grandfather", zh: "爺爺/公公", em: "👴"}, {en: "grandmother", zh: "嫲嫲/婆婆", em: "👵"},
-      {en: "baby", zh: "嬰兒", em: "👶"}
+    vegetables: { name: "蔬菜", emoji: "🥕", words: [
+      {en: "tomato", zh: "番茄", em: "🍅"}, {en: "carrot", zh: "紅蘿蔔", em: "🥕"}, {en: "peas", zh: "豌豆", em: "🫛"}, 
+      {en: "onion", zh: "洋蔥", em: "🧅"}, {en: "potatoes", zh: "馬鈴薯", em: "🥔"}, {en: "broccoli", zh: "西蘭花", em: "🥦"},
+      {en: "green peppers", zh: "青椒", em: "🫑"}, {en: "cucumber", zh: "黃瓜", em: "🥒"}, {en: "eggplant", zh: "茄子", em: "🍆"}, 
+      {en: "ginger", zh: "薑", em: "🫚"}, {en: "lettuce", zh: "生菜", em: "🥬"}, {en: "mushrooms", zh: "菇", em: "🍄"},
+      {en: "pumpkins", zh: "南瓜", em: "🎃"}, {en: "sweet corn", zh: "粟米", em: "🌽"}
     ]},
     clothes: { name: "衣服", emoji: "👕", words: [
-      {en: "shirt", zh: "恤衫", em: "👔"}, {en: "T-shirt", zh: "T恤", em: "👕"},
-      {en: "pants", zh: "長褲", em: "👖"}, {en: "skirt", zh: "裙子", em: "👗"},
-      {en: "jacket", zh: "外套", em: "🧥"}, {en: "shoes", zh: "鞋子", em: "👞"},
-      {en: "socks", zh: "襪子", em: "🧦"}, {en: "hat", zh: "帽子", em: "🧢"}
+      {en: "shirt", zh: "襯衫", em: "👔"}, {en: "pants", zh: "褲子", em: "👖"}, {en: "dress", zh: "裙子", em: "👗"}, 
+      {en: "shoes", zh: "鞋子", em: "👞"}, {en: "hat", zh: "帽子", em: "🧢"}, {en: "jacket", zh: "外套", em: "🧥"},
+      {en: "socks", zh: "襪子", em: "🧦"}, {en: "gloves", zh: "手套", em: "🧤"}, {en: "sweater", zh: "毛衣", em: "🧣"}, {en: "skirt", zh: "裙", em: "👗"}
     ]},
-    stationery: { name: "文具", emoji: "✏️", words: [
-      {en: "pencil", zh: "鉛筆", em: "✏️"}, {en: "pen", zh: "原子筆", em: "🖊️"},
-      {en: "eraser", zh: "擦膠", em: "🧽"}, {en: "ruler", zh: "間尺", em: "📏"},
-      {en: "paper", zh: "紙張", em: "📄"}, {en: "scissors", zh: "剪刀", em: "✂️"},
-      {en: "glue", zh: "膠水", em: "🧴"}
+    classroom: { name: "教室", emoji: "🏫", words: [
+      {en: "book", zh: "書", em: "📖"}, {en: "pencil", zh: "鉛筆", em: "✏️"}, {en: "pen", zh: "筆", em: "🖊️"}, 
+      {en: "ruler", zh: "尺", em: "📏"}, {en: "bag", zh: "書包", em: "🎒"}, {en: "chair", zh: "椅子", em: "🪑"},
+      {en: "paper", zh: "紙", em: "📄"}, {en: "scissors", zh: "剪刀", em: "✂️"}, {en: "eraser", zh: "橡皮擦", em: "🧽"}, {en: "desk", zh: "書桌", em: "🪑"}
+    ]},
+    family: { name: "家庭", emoji: "👨‍👩‍👧", words: [
+      {en: "mother", zh: "媽媽", em: "👩"}, {en: "father", zh: "爸爸", em: "👨"}, {en: "brother", zh: "哥哥", em: "👦"}, 
+      {en: "sister", zh: "姐姐", em: "👧"}, {en: "grandmother", zh: "奶奶", em: "👵"}, {en: "grandfather", zh: "爺爺", em: "👴"},
+      {en: "aunt", zh: "姑姑", em: "👩‍🦰"}, {en: "uncle", zh: "叔叔", em: "👨‍🦱"}, {en: "cousin", zh: "表兄弟姐妹", em: "🧒"}, {en: "family", zh: "家庭", em: "👨‍👩‍👧‍👦"}
+    ]},
+    actions: { name: "動作", emoji: "🏃", words: [
+      {en: "run", zh: "跑", em: "🏃"}, {en: "sing", zh: "唱歌", em: "🎤"}, {en: "dance", zh: "跳舞", em: "💃"}, 
+      {en: "write", zh: "寫", em: "✍️"}, {en: "sleep", zh: "睡", em: "😴"}, {en: "play", zh: "玩", em: "🛝"},
+      {en: "jump", zh: "跳", em: "🦘"}, {en: "read", zh: "閱讀", em: "📖"}, {en: "draw", zh: "畫", em: "🎨"}, {en: "eat", zh: "吃", em: "🍽️"}
+    ]},
+    weather: { name: "天氣", emoji: "☀️", words: [
+      {en: "sun", zh: "太陽", em: "☀️"}, {en: "rain", zh: "雨", em: "🌧️"}, {en: "cloud", zh: "雲", em: "☁️"}, 
+      {en: "wind", zh: "風", em: "💨"}, {en: "snow", zh: "雪", em: "❄️"}, {en: "hot", zh: "熱", em: "🥵"},
+      {en: "cold", zh: "冷", em: "🥶"}, {en: "spring", zh: "春天", em: "🌷"}, {en: "summer", zh: "夏天", em: "🏖️"}, {en: "winter", zh: "冬天", em: "⛄"}
+    ]},
+    places: { name: "地點", emoji: "🏥", words: [
+      {en: "school", zh: "學校", em: "🏫"}, {en: "home", zh: "家", em: "🏠"}, {en: "shop", zh: "商店", em: "🏪"}, 
+      {en: "library", zh: "圖書館", em: "📚"}, {en: "beach", zh: "海灘", em: "🏖️"}, {en: "bus stop", zh: "巴士站", em: "🚏"},
+      {en: "hospital", zh: "醫院", em: "🏥"}, {en: "market", zh: "市場", em: "🛒"}, {en: "park", zh: "公園", em: "🏞️"}, {en: "zoo", zh: "動物園", em: "🦓"}
+    ]},
+    shapes: { name: "形狀", emoji: "⭐", words: [
+      {en: "circle", zh: "圓形", em: "⚪"}, {en: "square", zh: "正方形", em: "⏹️"}, {en: "triangle", zh: "三角形", em: "🔺"}, 
+      {en: "rectangle", zh: "長方形", em: "🎴"}, {en: "star", zh: "星星", em: "⭐"}, {en: "heart", zh: "心形", em: "❤️"},
+      {en: "oval", zh: "橢圓形", em: "🥚"}, {en: "diamond", zh: "菱形", em: "♦️"}, {en: "hexagon", zh: "六邊形", em: "🛑"}, {en: "pentagon", zh: "五邊形", em: "🏠"}
+    ]},
+    toys: { name: "玩具", emoji: "🧸", words: [
+      {en: "ball", zh: "球", em: "⚽"}, {en: "car", zh: "玩具車", em: "🚗"}, {en: "train", zh: "玩具火車", em: "🚂"}, 
+      {en: "puzzle", zh: "拼圖", em: "🧩"}, {en: "kite", zh: "風箏", em: "🪁"}, {en: "robot", zh: "機器人", em: "🤖"},
+      {en: "teddy bear", zh: "熊啤啤", em: "🧸"}, {en: "doll", zh: "洋娃娃", em: "🪆"}
+    ]},
+    transport: { name: "交通工具", emoji: "🚌", words: [
+      {en: "bus", zh: "巴士", em: "🚌"}, {en: "car", zh: "汽車", em: "🚗"}, {en: "train", zh: "火車", em: "🚆"}, 
+      {en: "plane", zh: "飛機", em: "✈️"}, {en: "boat", zh: "船", em: "⛵"}, {en: "bicycle", zh: "單車", em: "🚲"},
+      {en: "truck", zh: "卡車", em: "🚚"}, {en: "taxi", zh: "的士", em: "🚕"}, {en: "motorcycle", zh: "電單車", em: "🏍️"}, {en: "tram", zh: "電車", em: "🚋"}
     ]}
   };
 
@@ -276,8 +292,18 @@
   let currentWordObj = null;
   let score = 0;
   let isAnswering = false;
+  let studyIndex = 0;
 
-  // 初始化首頁選單
+  // 隱藏所有畫面
+  function hideAllScreens() {
+    document.getElementById("home-screen").style.display = "none";
+    document.getElementById("mode-screen").style.display = "none";
+    document.getElementById("study-screen").style.display = "none";
+    document.getElementById("game-screen").style.display = "none";
+    window.speechSynthesis.cancel();
+  }
+
+  // 首頁初始化
   function initMenu() {
     const grid = document.getElementById("cat-grid");
     grid.innerHTML = "";
@@ -285,55 +311,100 @@
       const btn = document.createElement("button");
       btn.className = "cat-btn";
       btn.innerHTML = `<span>${db[key].emoji}</span>${db[key].name}`;
-      btn.onclick = () => startGame(key);
+      btn.onclick = () => showModeSelect(key);
       grid.appendChild(btn);
     }
   }
 
+  // 返回主頁
   function goHome() {
+    hideAllScreens();
     document.getElementById("home-screen").style.display = "block";
-    document.getElementById("game-screen").style.display = "none";
-    window.speechSynthesis.cancel();
   }
 
-  function startGame(category) {
-    currentCategory = category;
+  // 進入模式選擇畫面
+  function showModeSelect(category) {
+    if(category) currentCategory = category;
+    hideAllScreens();
+    document.getElementById("mode-title").innerText = `${db[currentCategory].emoji} ${db[currentCategory].name}`;
+    document.getElementById("mode-screen").style.display = "block";
+  }
+
+  // 返回模式選擇
+  function goModeSelect() {
+    showModeSelect(null);
+  }
+
+  // ================= 溫習模式邏輯 =================
+  function startStudy() {
+    hideAllScreens();
+    studyIndex = 0;
+    document.getElementById("study-screen").style.display = "block";
+    renderFlashcard();
+  }
+
+  function renderFlashcard() {
+    const words = db[currentCategory].words;
+    currentWordObj = words[studyIndex];
+    let displayWord = currentWordObj.en.charAt(0).toUpperCase() + currentWordObj.en.slice(1);
+
+    document.getElementById("fc-emoji").innerText = currentWordObj.em;
+    document.getElementById("fc-en").innerText = displayWord;
+    document.getElementById("fc-zh").innerText = currentWordObj.zh;
+    document.getElementById("fc-progress").innerText = `${studyIndex + 1} / ${words.length}`;
+
+    // 更新按鈕狀態
+    document.getElementById("btn-prev").disabled = (studyIndex === 0);
+    document.getElementById("btn-next").disabled = (studyIndex === words.length - 1);
+
+    // 換卡時自動發聲
+    setTimeout(playAudio, 300);
+  }
+
+  function nextCard() {
+    if (studyIndex < db[currentCategory].words.length - 1) {
+      studyIndex++;
+      renderFlashcard();
+    }
+  }
+
+  function prevCard() {
+    if (studyIndex > 0) {
+      studyIndex--;
+      renderFlashcard();
+    }
+  }
+
+  // ================= 闖關模式邏輯 =================
+  function startQuiz() {
+    hideAllScreens();
     score = 0;
     document.getElementById("score").innerText = score;
-    document.getElementById("home-screen").style.display = "none";
     document.getElementById("game-screen").style.display = "block";
     
-    // 改變標題顏色以符合分類
     const colors = ["#FF9AA2", "#B5EAD7", "#C7CEEA", "#FFDAC1"];
     document.getElementById("en-word").style.color = colors[Math.floor(Math.random()*colors.length)];
-
+    
     nextQuestion();
   }
 
   function nextQuestion() {
     isAnswering = false;
     const words = db[currentCategory].words;
-    
-    // 隨機選出正確答案
     currentWordObj = words[Math.floor(Math.random() * words.length)];
+    let displayWord = currentWordObj.en.charAt(0).toUpperCase() + currentWordObj.en.slice(1);
+    document.getElementById("en-word").innerText = displayWord;
     
-    document.getElementById("en-word").innerText = currentWordObj.en;
-    
-    // 產生選項 (1對 3錯)
     let options = [currentWordObj];
     let attempts = 0;
     while(options.length < 4 && attempts < 50) {
       let randomOpt = words[Math.floor(Math.random() * words.length)];
-      if(!options.includes(randomOpt)) {
-        options.push(randomOpt);
-      }
+      if(!options.includes(randomOpt)) options.push(randomOpt);
       attempts++;
     }
 
-    // 打亂選項順序
     options.sort(() => Math.random() - 0.5);
 
-    // 渲染按鈕
     const optArea = document.getElementById("options-area");
     optArea.innerHTML = "";
     options.forEach(opt => {
@@ -344,56 +415,45 @@
       optArea.appendChild(btn);
     });
 
-    // 自動朗讀英文
     setTimeout(playAudio, 300);
   }
 
   function checkAnswer(btn, isCorrect) {
-    if (isAnswering) return; // 鎖定防止連按
+    if (isAnswering) return; 
     isAnswering = true;
 
     if (isCorrect) {
       btn.classList.add("correct");
       score += 10;
       document.getElementById("score").innerText = score;
-      
-      // 答對播放簡單提示音 (Web Audio API)
       playTone(600, "sine", 0.1);
       setTimeout(() => playTone(800, "sine", 0.15), 100);
-
       setTimeout(nextQuestion, 1200);
     } else {
       btn.classList.add("wrong");
       score = Math.max(0, score - 5);
       document.getElementById("score").innerText = score;
-      
-      // 答錯提示音
       playTone(200, "sawtooth", 0.3);
       
-      // 找出並亮起正確答案
       const btns = document.querySelectorAll(".opt-btn");
       btns.forEach(b => {
-        if(b.innerHTML.includes(currentWordObj.zh)) {
-          b.classList.add("correct");
-        }
+        if(b.innerHTML.includes(currentWordObj.zh)) b.classList.add("correct");
       });
-
       setTimeout(nextQuestion, 2000);
     }
   }
 
-  // 語音發聲功能 (Text-to-Speech)
+  // ================= 共用語音及音效 =================
   function playAudio() {
     if (!currentWordObj) return;
-    window.speechSynthesis.cancel(); // 停止上一句
+    window.speechSynthesis.cancel(); 
     const utterance = new SpeechSynthesisUtterance(currentWordObj.en);
     utterance.lang = 'en-US'; 
-    utterance.rate = 0.85; // 放慢一點適合小學生
-    utterance.pitch = 1.1; // 稍微高音一點更可愛
+    utterance.rate = 0.85; 
+    utterance.pitch = 1.1; 
     window.speechSynthesis.speak(utterance);
   }
 
-  // 簡單產生音效的函數，不需額外載入聲音檔案
   function playTone(frequency, type, duration) {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioCtx.createOscillator();
@@ -413,6 +473,5 @@
   initMenu();
 
 </script>
-
 </body>
 </html>
