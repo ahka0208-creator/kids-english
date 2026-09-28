@@ -22,7 +22,7 @@
     body {
       background-color: var(--bg-color);
       margin: 0;
-      padding: 15px; /* 縮小邊距適應橫向 */
+      padding: 15px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -36,9 +36,8 @@
       background: white;
       border-radius: 30px;
       box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-      padding: 25px; /* 縮小內部留白 */
+      padding: 25px;
       position: relative;
-      /* 加入捲動設定，防止橫向螢幕被切斷 */
       max-height: 96vh;
       overflow-y: auto;
     }
@@ -63,11 +62,23 @@
     .cat-btn:active { transform: translateY(6px); box-shadow: none; }
     .cat-btn span { font-size: 45px; }
 
-    /* 各類別顏色隨機設定 */
-    .cat-btn:nth-child(4n+1) { background-color: var(--primary); color: white;}
-    .cat-btn:nth-child(4n+2) { background-color: var(--accent2); }
-    .cat-btn:nth-child(4n+3) { background-color: var(--secondary); }
-    .cat-btn:nth-child(4n+4) { background-color: var(--accent3); color: white;}
+    /* 綜合大測驗專屬按鈕樣式 */
+    .mix-btn {
+      grid-column: 1 / -1; /* 橫跨整行 */
+      background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+      color: white !important;
+      flex-direction: row; /* 橫向排列 */
+      justify-content: center;
+      padding: 25px;
+      box-shadow: 0 8px 15px rgba(255, 165, 0, 0.3);
+    }
+    .mix-btn span { font-size: 50px; margin-right: 15px; }
+
+    /* 各類別顏色隨機設定 (避開第一個 mix-btn) */
+    .cat-btn:not(.mix-btn):nth-child(4n+2) { background-color: var(--primary); color: white;}
+    .cat-btn:not(.mix-btn):nth-child(4n+3) { background-color: var(--accent2); }
+    .cat-btn:not(.mix-btn):nth-child(4n+4) { background-color: var(--secondary); }
+    .cat-btn:not(.mix-btn):nth-child(4n+1) { background-color: var(--accent3); color: white;}
 
     /* 模式選擇畫面 */
     #mode-screen { display: none; text-align: center; height: 100%; padding-top: 30px; }
@@ -87,11 +98,11 @@
     .back-btn { background: #eee; border: none; padding: 12px 25px; border-radius: 20px; font-size: 20px; font-weight: bold; cursor: pointer; }
     .header-title { font-size: 24px; font-weight: bold; color: var(--accent3); }
 
-    /* 溫習畫面 (閃卡) - 針對橫向縮小留白 */
+    /* 溫習畫面 (閃卡) */
     #study-screen { display: none; text-align: center; height: 100%; }
     .flashcard {
       background: white; border: 8px solid var(--accent3); border-radius: 30px;
-      padding: 30px 20px; /* 大幅縮小上下留白，防止被切斷 */
+      padding: 30px 20px; 
       margin: 0 auto; max-width: 500px; position: relative;
       box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
@@ -127,10 +138,7 @@
       display: flex; justify-content: center; align-items: center; gap: 15px; transition: all 0.2s;
     }
     .opt-btn:active { transform: scale(0.95); }
-    
-    /* 這裡獨立放大闖關選項的 Emoji */
     .opt-btn span { font-size: 55px; } 
-
     .correct { background: var(--correct); border-color: var(--correct); color: white; }
     .wrong { background: var(--wrong); border-color: var(--wrong); color: white; }
 
@@ -190,7 +198,7 @@
   <!-- 4. 遊戲畫面 -->
   <div id="game-screen">
     <div class="header">
-      <button class="back-btn" onclick="goModeSelect()">⬅️ 選模式</button>
+      <button class="back-btn" onclick="goBackFromGame()">⬅️ 返回</button>
       <div class="score-board">⭐ 得分: <span id="score">0</span></div>
     </div>
     
@@ -205,7 +213,7 @@
 </div>
 
 <script>
-  // 資料庫
+  // 資料庫 (已包含全部主題)
   const db = {
     bodyParts: { name: "身體部位", emoji: "👋", words: [
       {en: "arm", zh: "手臂", em: "💪"}, {en: "hand", zh: "手", em: "🖐️"}, {en: "foot", zh: "腳/手腳", em: "🦶"}, 
@@ -290,8 +298,6 @@
   let score = 0;
   let isAnswering = false;
   let studyIndex = 0;
-  
-  // 新增：儲存闖關模式尚未回答的問題，防止重複
   let remainingQuizWords = []; 
 
   function hideAllScreens() {
@@ -305,6 +311,15 @@
   function initMenu() {
     const grid = document.getElementById("cat-grid");
     grid.innerHTML = "";
+    
+    // 1. 新增：綜合大測驗按鈕 (置頂)
+    const mixBtn = document.createElement("button");
+    mixBtn.className = "cat-btn mix-btn";
+    mixBtn.innerHTML = `<span>🏆</span> 綜合大測驗 (全部主題)`;
+    mixBtn.onclick = () => startMixQuiz();
+    grid.appendChild(mixBtn);
+
+    // 2. 原本的單一主題按鈕
     for (let key in db) {
       const btn = document.createElement("button");
       btn.className = "cat-btn";
@@ -317,6 +332,15 @@
   function goHome() {
     hideAllScreens();
     document.getElementById("home-screen").style.display = "block";
+  }
+
+  // 決定從遊戲畫面返回邊度
+  function goBackFromGame() {
+    if (currentCategory === "all") {
+      goHome(); // 綜合測驗無溫習模式，直接返主頁
+    } else {
+      goModeSelect(); // 單一主題返去選模式
+    }
   }
 
   function showModeSelect(category) {
@@ -368,14 +392,37 @@
     }
   }
 
-  // ================= 闖關模式邏輯 (不重複機制) =================
+  // ================= 綜合測驗邏輯 (新增) =================
+  function startMixQuiz() {
+    hideAllScreens();
+    currentCategory = "all";
+    score = 0;
+    document.getElementById("score").innerText = score;
+    document.getElementById("game-screen").style.display = "block";
+
+    // 將所有主題的字收集到同一個陣列
+    let allWords = [];
+    for (let key in db) {
+      allWords = allWords.concat(db[key].words);
+    }
+    
+    // 洗牌
+    allWords.sort(() => Math.random() - 0.5);
+    
+    // 抽取 20 題作為綜合測驗 (如想測驗所有生字，可移除 .slice(0, 20))
+    remainingQuizWords = allWords.slice(0, 20);
+
+    nextQuestion();
+  }
+
+  // ================= 闖關模式邏輯 =================
   function startQuiz() {
     hideAllScreens();
     score = 0;
     document.getElementById("score").innerText = score;
     document.getElementById("game-screen").style.display = "block";
     
-    // 初始化題庫並打亂順序 (洗牌)
+    // 單一主題：將該主題所有生字洗牌
     remainingQuizWords = [...db[currentCategory].words];
     remainingQuizWords.sort(() => Math.random() - 0.5);
 
@@ -385,16 +432,15 @@
   function nextQuestion() {
     isAnswering = false;
     
-    // 檢查是否已經答完該類別所有題目
     if (remainingQuizWords.length === 0) {
       setTimeout(() => {
-        alert(`🎉 恭喜你完成「${db[currentCategory].name}」的挑戰！\n⭐ 你的總得分是：${score} 分！`);
-        goModeSelect();
+        const catName = currentCategory === "all" ? "綜合大測驗" : db[currentCategory].name;
+        alert(`🎉 恭喜你完成「${catName}」！\n⭐ 你的總得分是：${score} 分！`);
+        goBackFromGame();
       }, 500);
       return;
     }
 
-    // 抽出一題並從未答陣列中移除 (確保不重複)
     currentWordObj = remainingQuizWords.pop();
     
     let displayWord = currentWordObj.en.charAt(0).toUpperCase() + currentWordObj.en.slice(1);
@@ -403,18 +449,22 @@
     const colors = ["#FF9AA2", "#B5EAD7", "#C7CEEA", "#FFDAC1"];
     document.getElementById("en-word").style.color = colors[Math.floor(Math.random()*colors.length)];
     
-    // 產生選項 (1個正確答案 + 3個錯誤答案)
-    // 錯誤答案依然從該類別的所有單字中隨機抽取
-    const allWords = db[currentCategory].words;
+    // 獲取用來做選項的總字庫 (如果是綜合測驗，選項會由全部字庫中抽取)
+    let optionsSource = [];
+    if (currentCategory === "all") {
+      for (let key in db) { optionsSource = optionsSource.concat(db[key].words); }
+    } else {
+      optionsSource = db[currentCategory].words;
+    }
+
     let options = [currentWordObj];
     let attempts = 0;
     while(options.length < 4 && attempts < 50) {
-      let randomOpt = allWords[Math.floor(Math.random() * allWords.length)];
+      let randomOpt = optionsSource[Math.floor(Math.random() * optionsSource.length)];
       if(!options.includes(randomOpt)) options.push(randomOpt);
       attempts++;
     }
 
-    // 打亂按鈕順序
     options.sort(() => Math.random() - 0.5);
 
     const optArea = document.getElementById("options-area");
