@@ -1,470 +1,417 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🎒 升小一英文特訓</title>
-    <style>
-        :root {
-            /* 莫蘭迪活潑配色 */
-            --bg-dark: #1E232E;       
-            --bg-card: #2A3143;       
-            --primary: #82A0D8;       
-            --text-main: #E2E8F0;     
-            --text-muted: #94A3B8;    
-            --accent: #F4A261;        
-            --danger: #E76F51;
-            --success: #2A9D8F;
-            --tag-bg: rgba(130, 160, 216, 0.15);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>小一英文闖關小遊戲</title>
+  <style>
+    :root {
+      --bg-color: #f0f8ff;
+      --primary: #FF9AA2;
+      --secondary: #FFDAC1;
+      --accent1: #E2F0CB;
+      --accent2: #B5EAD7;
+      --accent3: #C7CEEA;
+      --text-dark: #4A4A4A;
+      --correct: #4ade80;
+      --wrong: #f87171;
+    }
 
-        body {
-            font-family: "Comic Sans MS", "Chalkboard SE", -apple-system, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            margin: 0;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
+    * { box-sizing: border-box; font-family: 'Comic Sans MS', -apple-system, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent;}
+    
+    body {
+      background-color: var(--bg-color);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-dark);
+    }
 
-        .container {
-            width: 100%;
-            max-width: 420px;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
+    .app-container {
+      width: 100%;
+      max-width: 800px;
+      background: white;
+      border-radius: 30px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+      min-height: 85vh;
+    }
 
-        .header {
-            text-align: center;
-            flex-shrink: 0;
-            margin-bottom: 12px;
-        }
-        .header h2 {
-            color: var(--accent);
-            font-size: 22px;
-            margin: 0 0 4px 0;
-            letter-spacing: 1px;
-        }
-        .header p {
-            color: var(--text-muted);
-            font-size: 12px;
-            margin: 0;
-        }
+    /* 首頁選單 */
+    #home-screen { display: block; text-align: center; }
+    #home-screen h1 { font-size: 36px; color: #ff6b6b; margin-bottom: 10px; }
+    #home-screen p { font-size: 20px; color: #888; margin-bottom: 30px; }
 
-        /* 頂部導航 Tabs */
-        .tabs {
-            display: flex;
-            background: var(--bg-card);
-            border-radius: 12px;
-            padding: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            flex-shrink: 0;
-            margin-bottom: 12px;
-        }
-        .tab-btn {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 10px 2px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        .tab-btn.active {
-            background: var(--accent);
-            color: #fff;
-            box-shadow: 0 2px 10px rgba(244, 162, 97, 0.3);
-        }
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
 
-        /* 內容區域 */
-        .content-area {
-            flex-grow: 1;
-            overflow-y: auto;
-            scrollbar-width: none;
-            padding-bottom: 20px;
-        }
-        .content-area::-webkit-scrollbar { display: none; }
-        
-        .view-section { display: none; flex-direction: column; gap: 12px; height: 100%; }
-        .view-section.active { display: flex; }
+    @media (max-width: 600px) {
+      .category-grid { grid-template-columns: repeat(2, 1fr); }
+    }
 
-        /* ====== 1. Phonics 拼讀表 ====== */
-        .alphabet-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            padding-bottom: 20px;
-        }
-        .letter-card {
-            background: linear-gradient(145deg, #2A3143 0%, #202635 100%);
-            border: 2px solid rgba(130, 160, 216, 0.2);
-            border-radius: 14px;
-            padding: 12px 0;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.1s, border-color 0.1s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-        .letter-card:active { 
-            transform: scale(0.9); 
-            border-color: var(--accent);
-            background: rgba(244, 162, 97, 0.1);
-        }
-        .letter-char { font-size: 28px; font-weight: bold; color: var(--primary); line-height: 1;}
-        .letter-word { font-size: 11px; color: var(--text-muted); }
-        .letter-emoji { font-size: 24px; }
+    .cat-btn {
+      background-color: var(--secondary);
+      border: none;
+      border-radius: 20px;
+      padding: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--text-dark);
+      cursor: pointer;
+      box-shadow: 0 6px 0px rgba(0,0,0,0.1);
+      transition: transform 0.1s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .cat-btn:active { transform: translateY(6px); box-shadow: none; }
+    .cat-btn span { font-size: 40px; }
 
-        /* ====== 2. 升小一閃卡 ====== */
-        .flashcard-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            perspective: 1000px;
-        }
-        .flashcard {
-            width: 100%;
-            height: 280px;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
-            cursor: pointer;
-        }
-        .flashcard.flipped { transform: rotateY(180deg); }
-        
-        .flashcard-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            background: linear-gradient(145deg, #2A3143 0%, #202635 100%);
-            border-radius: 24px;
-            border: 2px solid rgba(255,255,255,0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            padding: 20px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-        .flashcard-back { 
-            transform: rotateY(180deg); 
-            background: linear-gradient(145deg, #202635 0%, #1a1e29 100%); 
-            border-color: var(--accent); 
-        }
-        
-        .fc-category { position: absolute; top: 16px; font-size: 12px; color: var(--text-main); background: var(--tag-bg); padding: 4px 12px; border-radius: 12px; font-weight: bold; }
-        .fc-word { font-size: 36px; font-weight: bold; color: var(--text-main); margin-bottom: 8px; line-height: 1.2;}
-        .fc-emoji { font-size: 70px; margin-bottom: 10px; }
-        .fc-zh { font-size: 22px; color: var(--accent); font-weight: bold;}
-        
-        .fc-controls {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            margin-top: 10px;
-            gap: 12px;
-        }
-        .fc-btn {
-            flex: 1;
-            background: var(--bg-card);
-            border: 2px solid rgba(255,255,255,0.1);
-            color: var(--text-main);
-            padding: 16px;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .fc-btn:active { background: rgba(255,255,255,0.1); }
-        .fc-play { 
-            background: var(--accent); 
-            color: #fff; 
-            border: none; 
-            width: 60px;
-            border-radius: 16px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 24px; 
-            cursor: pointer;
-        }
+    /* 遊戲畫面 */
+    #game-screen { display: none; text-align: center; height: 100%; }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
 
-        /* ====== 3. 測驗 ====== */
-        .quiz-box {
-            background: var(--bg-card);
-            border-radius: 20px;
-            padding: 30px 20px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            border: 2px solid rgba(255,255,255,0.05);
-        }
-        .quiz-question { font-size: 32px; font-weight: bold; color: var(--primary); line-height: 1.2;}
-        .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .quiz-opt-btn {
-            background: rgba(255,255,255,0.05);
-            border: 2px solid rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 16px;
-            font-size: 48px;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .quiz-opt-btn.correct { background: var(--success); border-color: var(--success); transform: scale(1.05);}
-        .quiz-opt-btn.wrong { background: var(--danger); border-color: var(--danger); }
-    </style>
+    .back-btn {
+      background: #eee;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .score-board {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ff9800;
+      background: #fff3e0;
+      padding: 10px 20px;
+      border-radius: 20px;
+    }
+
+    .question-box {
+      margin: 20px 0 40px 0;
+    }
+
+    .english-word {
+      font-size: 64px;
+      font-weight: 800;
+      color: var(--accent3);
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+    }
+
+    .audio-btn {
+      background: var(--accent1);
+      border: none;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      font-size: 32px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .audio-btn:active { transform: scale(0.9); }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .opt-btn {
+      background: white;
+      border: 4px solid var(--accent2);
+      border-radius: 25px;
+      padding: 30px;
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--text-dark);
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      transition: all 0.2s;
+    }
+
+    .opt-btn:active { transform: scale(0.95); }
+    
+    .correct { background: var(--correct); border-color: var(--correct); color: white; }
+    .wrong { background: var(--wrong); border-color: var(--wrong); color: white; }
+
+    /* 各類別顏色隨機設定 */
+    .cat-btn:nth-child(3n+1) { background-color: var(--primary); color: white;}
+    .cat-btn:nth-child(3n+2) { background-color: var(--accent2); }
+    .cat-btn:nth-child(3n+3) { background-color: var(--secondary); }
+  </style>
 </head>
 <body>
 
-<div class="container">
+<div class="app-container">
+  
+  <!-- 首頁 -->
+  <div id="home-screen">
+    <h1>🌟 小一英文單字大冒險 🌟</h1>
+    <p>請選擇一個主題開始闖關！</p>
+    <div class="category-grid" id="cat-grid">
+      <!-- 按鈕會由 JS 自動生成 -->
+    </div>
+  </div>
+
+  <!-- 遊戲畫面 -->
+  <div id="game-screen">
     <div class="header">
-        <h2>🎒 升小一英文特訓</h2>
-        <p>Phonics 拼讀 | 常見生字 | 基礎句子</p>
+      <button class="back-btn" onclick="goHome()">🏠 返回</button>
+      <div class="score-board">⭐ 得分: <span id="score">0</span></div>
+    </div>
+    
+    <div class="question-box">
+      <div class="english-word" id="en-word">Apple</div>
+      <button class="audio-btn" onclick="playAudio()">🔊</button>
     </div>
 
-    <!-- 導航列 -->
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('phonics', this)">🔤 Phonics</button>
-        <button class="tab-btn" onclick="switchTab('flashcard', this)">📇 認字閃卡</button>
-        <button class="tab-btn" onclick="switchTab('quiz', this)">🎈 聽音估圖</button>
+    <div class="options-grid" id="options-area">
+      <!-- 選項由 JS 生成 -->
     </div>
+  </div>
 
-    <div class="content-area">
-        <!-- 1. Phonics 表 -->
-        <div id="view-phonics" class="view-section active">
-            <div style="font-size: 12px; color: var(--text-muted); text-align:center;">💡 點擊卡片學習字母同自然發音 (例如: A, Apple)</div>
-            <div class="alphabet-grid" id="phonicsGrid">
-                <!-- JS 動態生成 -->
-            </div>
-        </div>
-
-        <!-- 2. 升小一閃卡 -->
-        <div id="view-flashcard" class="view-section">
-            <div style="font-size: 12px; color: var(--text-muted); text-align:center;">💡 包含小一面試常見單字及簡單句子</div>
-            <div class="flashcard-container">
-                <div class="flashcard" id="fc-element" onclick="toggleFlashcard()">
-                    <div class="flashcard-face">
-                        <div class="fc-category" id="fc-category">學校 School</div>
-                        <div class="fc-word" id="fc-word">Book</div>
-                        <div style="opacity: 0.5; font-size: 12px; margin-top:20px;">👆 點擊翻看意思</div>
-                    </div>
-                    <div class="flashcard-face flashcard-back">
-                        <div class="fc-emoji" id="fc-emoji">📖</div>
-                        <div class="fc-zh" id="fc-zh">書本</div>
-                    </div>
-                </div>
-            </div>
-            <div class="fc-controls">
-                <button class="fc-btn" onclick="prevCard()">⬅️ 上一題</button>
-                <button class="fc-play" onclick="playCurrentWord()">🔊</button>
-                <button class="fc-btn" onclick="nextCard()">下一題 ➡️</button>
-            </div>
-        </div>
-
-        <!-- 3. 聽音估圖 -->
-        <div id="view-quiz" class="view-section">
-            <div class="quiz-box">
-                <div style="font-size: 13px; color: var(--text-muted);">🔊 聽發音，選出正確的圖案！</div>
-                <div class="quiz-question" id="quizQuestion">Book</div>
-                <div class="quiz-options" id="quizOptions"></div>
-            </div>
-            <button class="fc-btn" style="width: 100%; margin-top: 10px;" onclick="nextQuiz()">⏭️ 下一題</button>
-        </div>
-    </div>
 </div>
 
 <script>
-    // --- 智能語音引擎 (TTS) ---
-    function speak(text, lang = 'en-US', rate = 0.8) {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = lang; 
-            msg.rate = rate; 
-            window.speechSynthesis.speak(msg);
-        }
+  // 11大分類英文詞彙庫 (專為小一設計，配有 Emoji)
+  const db = {
+    school: { name: "學校", emoji: "🏫", words: [
+      {en: "school", zh: "學校", em: "🏫"}, {en: "teacher", zh: "老師", em: "👩‍🏫"}, 
+      {en: "student", zh: "學生", em: "🧒"}, {en: "classroom", zh: "課室", em: "🚪"},
+      {en: "desk", zh: "書桌", em: "🪑"}, {en: "book", zh: "書本", em: "📖"},
+      {en: "bag", zh: "書包", em: "🎒"}
+    ]},
+    month: { name: "月份", emoji: "📅", words: [
+      {en: "January", zh: "一月", em: "1️⃣"}, {en: "February", zh: "二月", em: "2️⃣"},
+      {en: "March", zh: "三月", em: "3️⃣"}, {en: "April", zh: "四月", em: "4️⃣"},
+      {en: "May", zh: "五月", em: "5️⃣"}, {en: "June", zh: "六月", em: "6️⃣"},
+      {en: "July", zh: "七月", em: "7️⃣"}, {en: "August", zh: "八月", em: "8️⃣"},
+      {en: "September", zh: "九月", em: "9️⃣"}, {en: "October", zh: "十月", em: "🔟"},
+      {en: "November", zh: "十一月", em: "1️⃣1️⃣"}, {en: "December", zh: "十二月", em: "1️⃣2️⃣"}
+    ]},
+    number: { name: "數字 1-20", emoji: "🔢", words: [
+      {en: "one", zh: "一", em: "1"}, {en: "two", zh: "二", em: "2"}, {en: "three", zh: "三", em: "3"},
+      {en: "four", zh: "四", em: "4"}, {en: "five", zh: "五", em: "5"}, {en: "six", zh: "六", em: "6"},
+      {en: "seven", zh: "七", em: "7"}, {en: "eight", zh: "八", em: "8"}, {en: "nine", zh: "九", em: "9"},
+      {en: "ten", zh: "十", em: "10"}, {en: "eleven", zh: "十一", em: "11"}, {en: "twelve", zh: "十二", em: "12"},
+      {en: "thirteen", zh: "十三", em: "13"}, {en: "fourteen", zh: "十四", em: "14"}, {en: "fifteen", zh: "十五", em: "15"},
+      {en: "sixteen", zh: "十六", em: "16"}, {en: "seventeen", zh: "十七", em: "17"}, {en: "eighteen", zh: "十八", em: "18"},
+      {en: "nineteen", zh: "十九", em: "19"}, {en: "twenty", zh: "二十", em: "20"}
+    ]},
+    fruit: { name: "水果", emoji: "🍎", words: [
+      {en: "apple", zh: "蘋果", em: "🍎"}, {en: "banana", zh: "香蕉", em: "🍌"}, 
+      {en: "orange", zh: "橙", em: "🍊"}, {en: "grape", zh: "葡萄", em: "🍇"},
+      {en: "watermelon", zh: "西瓜", em: "🍉"}, {en: "strawberry", zh: "士多啤梨", em: "🍓"},
+      {en: "mango", zh: "芒果", em: "🥭"}, {en: "pear", zh: "梨", em: "🍐"}
+    ]},
+    animal: { name: "動物", emoji: "🐶", words: [
+      {en: "dog", zh: "狗", em: "🐶"}, {en: "cat", zh: "貓", em: "🐱"}, 
+      {en: "bird", zh: "鳥", em: "🐦"}, {en: "fish", zh: "魚", em: "🐟"},
+      {en: "pig", zh: "豬", em: "🐷"}, {en: "elephant", zh: "大象", em: "🐘"},
+      {en: "lion", zh: "獅子", em: "🦁"}, {en: "monkey", zh: "猴子", em: "🐵"}
+    ]},
+    food: { name: "食物", emoji: "🍔", words: [
+      {en: "bread", zh: "麵包", em: "🍞"}, {en: "egg", zh: "雞蛋", em: "🥚"},
+      {en: "meat", zh: "肉", em: "🥩"}, {en: "rice", zh: "飯", em: "🍚"},
+      {en: "cake", zh: "蛋糕", em: "🍰"}, {en: "pizza", zh: "薄餅", em: "🍕"},
+      {en: "cheese", zh: "芝士", em: "🧀"}, {en: "soup", zh: "湯", em: "🥣"}
+    ]},
+    vegetable: { name: "蔬菜", emoji: "🥦", words: [
+      {en: "carrot", zh: "紅蘿蔔", em: "🥕"}, {en: "potato", zh: "馬鈴薯", em: "🥔"},
+      {en: "tomato", zh: "番茄", em: "🍅"}, {en: "onion", zh: "洋蔥", em: "🧅"},
+      {en: "corn", zh: "粟米", em: "🌽"}, {en: "mushroom", zh: "蘑菇", em: "🍄"}
+    ]},
+    color: { name: "顏色", emoji: "🎨", words: [
+      {en: "red", zh: "紅色", em: "🔴"}, {en: "blue", zh: "藍色", em: "🔵"},
+      {en: "green", zh: "綠色", em: "🟢"}, {en: "yellow", zh: "黃色", em: "🟡"},
+      {en: "orange", zh: "橙色", em: "🟠"}, {en: "purple", zh: "紫色", em: "🟣"},
+      {en: "black", zh: "黑色", em: "⚫"}, {en: "white", zh: "白色", em: "⚪"},
+      {en: "pink", zh: "粉紅色", em: "🌸"}, {en: "brown", zh: "啡色", em: "🟤"}
+    ]},
+    family: { name: "家庭", emoji: "👨‍👩‍👧", words: [
+      {en: "father", zh: "爸爸", em: "👨"}, {en: "mother", zh: "媽媽", em: "👩"},
+      {en: "brother", zh: "兄弟", em: "👦"}, {en: "sister", zh: "姊妹", em: "👧"},
+      {en: "grandfather", zh: "爺爺/公公", em: "👴"}, {en: "grandmother", zh: "嫲嫲/婆婆", em: "👵"},
+      {en: "baby", zh: "嬰兒", em: "👶"}
+    ]},
+    clothes: { name: "衣服", emoji: "👕", words: [
+      {en: "shirt", zh: "恤衫", em: "👔"}, {en: "T-shirt", zh: "T恤", em: "👕"},
+      {en: "pants", zh: "長褲", em: "👖"}, {en: "skirt", zh: "裙子", em: "👗"},
+      {en: "jacket", zh: "外套", em: "🧥"}, {en: "shoes", zh: "鞋子", em: "👞"},
+      {en: "socks", zh: "襪子", em: "🧦"}, {en: "hat", zh: "帽子", em: "🧢"}
+    ]},
+    stationery: { name: "文具", emoji: "✏️", words: [
+      {en: "pencil", zh: "鉛筆", em: "✏️"}, {en: "pen", zh: "原子筆", em: "🖊️"},
+      {en: "eraser", zh: "擦膠", em: "🧽"}, {en: "ruler", zh: "間尺", em: "📏"},
+      {en: "paper", zh: "紙張", em: "📄"}, {en: "scissors", zh: "剪刀", em: "✂️"},
+      {en: "glue", zh: "膠水", em: "🧴"}
+    ]}
+  };
+
+  let currentCategory = "";
+  let currentWordObj = null;
+  let score = 0;
+  let isAnswering = false;
+
+  // 初始化首頁選單
+  function initMenu() {
+    const grid = document.getElementById("cat-grid");
+    grid.innerHTML = "";
+    for (let key in db) {
+      const btn = document.createElement("button");
+      btn.className = "cat-btn";
+      btn.innerHTML = `<span>${db[key].emoji}</span>${db[key].name}`;
+      btn.onclick = () => startGame(key);
+      grid.appendChild(btn);
     }
+  }
 
-    // --- 數據庫 ---
-    // 升小一 Phonics 基礎
-    const phonicsData = [
-        { l: 'A', w: 'Apple', e: '🍎' }, { l: 'B', w: 'Bear', e: '🐻' },
-        { l: 'C', w: 'Cat', e: '🐱' }, { l: 'D', w: 'Dog', e: '🐶' },
-        { l: 'E', w: 'Egg', e: '🥚' }, { l: 'F', w: 'Fish', e: '🐟' },
-        { l: 'G', w: 'Grape', e: '🍇' }, { l: 'H', w: 'Hat', e: '🎩' },
-        { l: 'I', w: 'Ice', e: '🧊' }, { l: 'J', w: 'Juice', e: '🧃' },
-        { l: 'K', w: 'Key', e: '🔑' }, { l: 'L', w: 'Lion', e: '🦁' },
-        { l: 'M', w: 'Monkey', e: '🐵' }, { l: 'N', w: 'Nut', e: '🥜' },
-        { l: 'O', w: 'Orange', e: '🍊' }, { l: 'P', w: 'Pig', e: '🐷' },
-        { l: 'Q', w: 'Queen', e: '👑' }, { l: 'R', w: 'Rabbit', e: '🐰' },
-        { l: 'S', w: 'Sun', e: '☀️' }, { l: 'T', w: 'Tiger', e: '🐯' },
-        { l: 'U', w: 'Umbrella', e: '☔' }, { l: 'V', w: 'Van', e: '🚐' },
-        { l: 'W', w: 'Water', e: '💧' }, { l: 'X', w: 'X-ray', e: '🦴' },
-        { l: 'Y', w: 'Yo-yo', e: '🪀' }, { l: 'Z', w: 'Zebra', e: '🦓' }
-    ];
+  function goHome() {
+    document.getElementById("home-screen").style.display = "block";
+    document.getElementById("game-screen").style.display = "none";
+    window.speechSynthesis.cancel();
+  }
 
-    // 升小一必學單字及句子
-    const vocabData = [
-        // 學校 School
-        { cat: '學校 School', en: 'Book', zh: '書本', emoji: '📖' },
-        { cat: '學校 School', en: 'Pencil', zh: '鉛筆', emoji: '✏️' },
-        { cat: '學校 School', en: 'Bag', zh: '書包', emoji: '🎒' },
-        // 家庭 Family
-        { cat: '家庭 Family', en: 'Father', zh: '爸爸', emoji: '👨' },
-        { cat: '家庭 Family', en: 'Mother', zh: '媽媽', emoji: '👩' },
-        { cat: '家庭 Family', en: 'Baby', zh: 'BB', emoji: '👶' },
-        // 身體 Body
-        { cat: '身體 Body', en: 'Eye', zh: '眼睛', emoji: '👁️' },
-        { cat: '身體 Body', en: 'Ear', zh: '耳朵', emoji: '👂' },
-        { cat: '身體 Body', en: 'Nose', zh: '鼻子', emoji: '👃' },
-        // 常見簡單句子 (Sight Words & Sentences)
-        { cat: '簡單句子 Sentences', en: 'This is an apple.', zh: '這是一個蘋果。', emoji: '🍎' },
-        { cat: '簡單句子 Sentences', en: 'I like dogs.', zh: '我喜歡狗。', emoji: '🐶' },
-        { cat: '簡單句子 Sentences', en: 'It is a book.', zh: '這是一本書。', emoji: '📖' },
-        { cat: '簡單句子 Sentences', en: 'I am happy.', zh: '我很開心。', emoji: '😄' },
-        { cat: '簡單句子 Sentences', en: 'Good morning.', zh: '早晨。', emoji: '☀️' }
-    ];
-
-    // --- Tab 切換 ---
-    function switchTab(viewId, btn) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-        document.getElementById('view-' + viewId).classList.add('active');
-        
-        if (viewId === 'quiz') nextQuiz();
-    }
-
-    // --- 1. Phonics 邏輯 ---
-    function renderPhonics() {
-        const grid = document.getElementById('phonicsGrid');
-        grid.innerHTML = '';
-        phonicsData.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'letter-card';
-            div.innerHTML = `
-                <div class="letter-char">${item.l}</div>
-                <div class="letter-emoji">${item.e}</div>
-                <div class="letter-word">${item.w}</div>
-            `;
-            // 點擊時讀出: "A... Apple"
-            div.onclick = () => speak(item.l + ', ' + item.w, 'en-US', 0.8);
-            grid.appendChild(div);
-        });
-    }
-
-    // --- 2. 閃卡邏輯 ---
-    let currentCardIdx = 0;
+  function startGame(category) {
+    currentCategory = category;
+    score = 0;
+    document.getElementById("score").innerText = score;
+    document.getElementById("home-screen").style.display = "none";
+    document.getElementById("game-screen").style.display = "block";
     
-    function loadFlashcard() {
-        const card = document.getElementById('fc-element');
-        card.classList.remove('flipped');
-        
-        setTimeout(() => {
-            const data = vocabData[currentCardIdx];
-            document.getElementById('fc-category').innerText = data.cat;
-            document.getElementById('fc-word').innerText = data.en;
-            document.getElementById('fc-emoji').innerText = data.emoji;
-            document.getElementById('fc-zh').innerText = data.zh;
-        }, 150);
+    // 改變標題顏色以符合分類
+    const colors = ["#FF9AA2", "#B5EAD7", "#C7CEEA", "#FFDAC1"];
+    document.getElementById("en-word").style.color = colors[Math.floor(Math.random()*colors.length)];
+
+    nextQuestion();
+  }
+
+  function nextQuestion() {
+    isAnswering = false;
+    const words = db[currentCategory].words;
+    
+    // 隨機選出正確答案
+    currentWordObj = words[Math.floor(Math.random() * words.length)];
+    
+    document.getElementById("en-word").innerText = currentWordObj.en;
+    
+    // 產生選項 (1對 3錯)
+    let options = [currentWordObj];
+    let attempts = 0;
+    while(options.length < 4 && attempts < 50) {
+      let randomOpt = words[Math.floor(Math.random() * words.length)];
+      if(!options.includes(randomOpt)) {
+        options.push(randomOpt);
+      }
+      attempts++;
     }
 
-    function toggleFlashcard() { 
-        const card = document.getElementById('fc-element');
-        const isFlipped = card.classList.toggle('flipped'); 
-        const data = vocabData[currentCardIdx];
+    // 打亂選項順序
+    options.sort(() => Math.random() - 0.5);
 
-        if (isFlipped) { speak(data.zh, 'zh-HK', 0.9); } 
-        else { speak(data.en, 'en-US', 0.8); }
-    }
+    // 渲染按鈕
+    const optArea = document.getElementById("options-area");
+    optArea.innerHTML = "";
+    options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.className = "opt-btn";
+      btn.innerHTML = `<span>${opt.em}</span> ${opt.zh}`;
+      btn.onclick = () => checkAnswer(btn, opt === currentWordObj);
+      optArea.appendChild(btn);
+    });
 
-    function prevCard() { 
-        currentCardIdx = (currentCardIdx - 1 + vocabData.length) % vocabData.length; 
-        loadFlashcard(); 
-        speak(vocabData[currentCardIdx].en, 'en-US', 0.8);
-    }
+    // 自動朗讀英文
+    setTimeout(playAudio, 300);
+  }
 
-    function nextCard() { 
-        currentCardIdx = (currentCardIdx + 1) % vocabData.length; 
-        loadFlashcard(); 
-        speak(vocabData[currentCardIdx].en, 'en-US', 0.8);
-    }
+  function checkAnswer(btn, isCorrect) {
+    if (isAnswering) return; // 鎖定防止連按
+    isAnswering = true;
 
-    function playCurrentWord() { 
-        speak(vocabData[currentCardIdx].en, 'en-US', 0.8); 
-    }
+    if (isCorrect) {
+      btn.classList.add("correct");
+      score += 10;
+      document.getElementById("score").innerText = score;
+      
+      // 答對播放簡單提示音 (Web Audio API)
+      playTone(600, "sine", 0.1);
+      setTimeout(() => playTone(800, "sine", 0.15), 100);
 
-    // --- 3. 測驗邏輯 ---
-    let correctEmoji = '';
-
-    function nextQuiz() {
-        const optionsBox = document.getElementById('quizOptions');
-        optionsBox.innerHTML = '';
-        
-        const correctItem = vocabData[Math.floor(Math.random() * vocabData.length)];
-        document.getElementById('quizQuestion').innerText = correctItem.en;
-        correctEmoji = correctItem.emoji;
-        
-        let options = [correctEmoji];
-        
-        while (options.length < 4) {
-            const wrongItem = vocabData[Math.floor(Math.random() * vocabData.length)];
-            if (!options.includes(wrongItem.emoji)) {
-                options.push(wrongItem.emoji);
-            }
+      setTimeout(nextQuestion, 1200);
+    } else {
+      btn.classList.add("wrong");
+      score = Math.max(0, score - 5);
+      document.getElementById("score").innerText = score;
+      
+      // 答錯提示音
+      playTone(200, "sawtooth", 0.3);
+      
+      // 找出並亮起正確答案
+      const btns = document.querySelectorAll(".opt-btn");
+      btns.forEach(b => {
+        if(b.innerHTML.includes(currentWordObj.zh)) {
+          b.classList.add("correct");
         }
+      });
 
-        options.sort(() => Math.random() - 0.5);
-
-        options.forEach(opt => {
-            const btn = document.createElement('button');
-            btn.className = 'quiz-opt-btn';
-            btn.innerText = opt;
-            btn.onclick = () => checkAnswer(btn, opt);
-            optionsBox.appendChild(btn);
-        });
-        
-        speak(correctItem.en, 'en-US', 0.8);
+      setTimeout(nextQuestion, 2000);
     }
+  }
 
-    function checkAnswer(btn, selected) {
-        if (btn.classList.contains('correct') || btn.classList.contains('wrong')) return;
-        
-        if (selected === correctEmoji) {
-            btn.classList.add('correct');
-            if (navigator.vibrate) navigator.vibrate([50, 50]);
-            speak("Good job!", 'en-US', 1.0); 
-            setTimeout(nextQuiz, 1500); 
-        } else {
-            btn.classList.add('wrong');
-            if (navigator.vibrate) navigator.vibrate(200); 
-            speak("Try again", 'en-US', 1.0);
-        }
-    }
+  // 語音發聲功能 (Text-to-Speech)
+  function playAudio() {
+    if (!currentWordObj) return;
+    window.speechSynthesis.cancel(); // 停止上一句
+    const utterance = new SpeechSynthesisUtterance(currentWordObj.en);
+    utterance.lang = 'en-US'; 
+    utterance.rate = 0.85; // 放慢一點適合小學生
+    utterance.pitch = 1.1; // 稍微高音一點更可愛
+    window.speechSynthesis.speak(utterance);
+  }
 
-    // 初始化
-    renderPhonics();
-    loadFlashcard();
+  // 簡單產生音效的函數，不需額外載入聲音檔案
+  function playTone(frequency, type, duration) {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    
+    oscillator.type = type;
+    oscillator.frequency.value = frequency;
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    
+    oscillator.start();
+    gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+    oscillator.stop(audioCtx.currentTime + duration);
+  }
+
+  // 啟動程式
+  initMenu();
+
 </script>
 
 </body>
